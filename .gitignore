@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.tmp/
+.DS_Store
+*.log
+*.pbiviz
+.vscode/
+coverage/
+webpack.statistics*.html
+.eslintcache
+*.tmp
+*.cache
+*.cert
+*.pfx
+*.snk

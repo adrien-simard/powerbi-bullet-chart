@@ -1,0 +1,19 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ES2020",
+    "lib": ["DOM", "ES2020"],
+    "moduleResolution": "Node",
+    "declaration": false,
+    "sourceMap": true,
+    "outDir": ".tmp/build",
+    "strict": false,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["powerbi-visuals-api"]
+  },
+  "files": [
+    "src/visual.ts",
+    "src/settings.ts"
+  ]
+}

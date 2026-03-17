@@ -1,0 +1,299 @@
+{
+  "dataRoles": [
+    {
+      "displayName": "Category",
+      "name": "category",
+      "kind": "Grouping"
+    },
+    {
+      "displayName": "Legend",
+      "name": "legend",
+      "kind": "Grouping"
+    },
+    {
+      "displayName": "Actual",
+      "name": "actual",
+      "kind": "Measure"
+    },
+    {
+      "displayName": "Target",
+      "name": "target",
+      "kind": "Measure"
+    },
+    {
+      "displayName": "Forecast",
+      "name": "forecast",
+      "kind": "Measure"
+    }
+  ],
+  "dataViewMappings": [
+    {
+      "conditions": [
+        {
+          "category": {
+            "max": 1
+          },
+          "legend": {
+            "max": 1
+          },
+          "actual": {
+            "max": 1
+          },
+          "target": {
+            "max": 1
+          },
+          "forecast": {
+            "max": 1
+          }
+        }
+      ],
+      "categorical": {
+        "categories": {
+          "for": {
+            "in": "category"
+          },
+          "dataReductionAlgorithm": {
+            "top": {}
+          }
+        },
+        "values": {
+          "group": {
+            "by": "legend",
+            "select": [
+              {
+                "bind": {
+                  "to": "actual"
+                }
+              },
+              {
+                "bind": {
+                  "to": "target"
+                }
+              },
+              {
+                "bind": {
+                  "to": "forecast"
+                }
+              }
+            ],
+            "dataReductionAlgorithm": {
+              "top": {}
+            }
+          }
+        }
+      }
+    }
+  ],
+  "objects": {
+    "bulletChart": {
+      "displayName": "Bullet Chart",
+      "properties": {
+        "warningThreshold": {
+          "displayName": "Warning threshold",
+          "type": {
+            "numeric": true
+          }
+        },
+        "barHeight": {
+          "displayName": "Bar height ratio",
+          "type": {
+            "numeric": true
+          }
+        },
+        "showLegend": {
+          "displayName": "Show legend",
+          "type": {
+            "bool": true
+          }
+        },
+        "showCategoryLabels": {
+          "displayName": "Show category labels",
+          "type": {
+            "bool": true
+          }
+        },
+        "showDataLabels": {
+          "displayName": "Show data labels",
+          "type": {
+            "bool": true
+          }
+        },
+        "labelPosition": {
+          "displayName": "Bar label position",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Inside",
+                "value": "inside"
+              },
+              {
+                "displayName": "Bottom",
+                "value": "bottom"
+              },
+              {
+                "displayName": "Top",
+                "value": "top"
+              }
+            ]
+          }
+        },
+        "autoLabelContrast": {
+          "displayName": "Auto label contrast",
+          "type": {
+            "bool": true
+          }
+        },
+        "legendPosition": {
+          "displayName": "Legend position",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Top",
+                "value": "top"
+              },
+              {
+                "displayName": "Bottom",
+                "value": "bottom"
+              },
+              {
+                "displayName": "Left",
+                "value": "left"
+              },
+              {
+                "displayName": "Right",
+                "value": "right"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "colors": {
+      "displayName": "Colors",
+      "properties": {
+        "safeColor": {
+          "displayName": "0-Threshold zone",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "warningColor": {
+          "displayName": "Threshold-Target zone",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "overBudgetColor": {
+          "displayName": "Over budget",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "targetColor": {
+          "displayName": "Target line",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "labelColor": {
+          "displayName": "Text",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "barLabelColor": {
+          "displayName": "Bar label color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        }
+      }
+    },
+    "numberFormat": {
+      "displayName": "Number format",
+      "properties": {
+        "valueDecimals": {
+          "displayName": "Value decimals",
+          "type": {
+            "numeric": true
+          }
+        },
+        "percentDecimals": {
+          "displayName": "Percent decimals",
+          "type": {
+            "numeric": true
+          }
+        },
+        "showKCHF": {
+          "displayName": "Show kCHF suffix",
+          "type": {
+            "bool": true
+          }
+        },
+        "fontSize": {
+          "displayName": "Font size",
+          "type": {
+            "numeric": true
+          }
+        },
+        "boldNumbers": {
+          "displayName": "Bold numbers",
+          "type": {
+            "bool": true
+          }
+        },
+        "useFieldDataFormat": {
+          "displayName": "Use field data format",
+          "type": {
+            "bool": true
+          }
+        }
+      }
+    }
+  },
+  "privileges": [],
+  "tooltips": {
+    "supportedTypes": {
+      "default": true,
+      "canvas": true
+    },
+    "supportEnhancedTooltips": true
+  },
+  "sorting": {
+    "default": {}
+  },
+  "drilldown": {
+    "roles": [
+      "category"
+    ]
+  },
+  "supportsKeyboardFocus": true,
+  "supportsLandingPage": true,
+  "supportsEmptyDataView": true,
+  "supportsMultiVisualSelection": true,
+  "supportsHighlight": false
+}

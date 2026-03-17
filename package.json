@@ -1,0 +1,29 @@
+{
+  "name": "bullet-chart-legend-visual",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Custom Power BI bullet chart visual with legend-based colors.",
+  "scripts": {
+    "prebuild": "node scripts/copy-icon.js",
+    "build": "pbiviz package",
+    "start": "pbiviz start",
+    "lint": "echo \"No lint configured\""
+  },
+  "dependencies": {
+    "d3": "^7.9.0",
+    "powerbi-models": "^1.13.1",
+    "powerbi-visuals-api": "~5.7.0",
+    "powerbi-visuals-utils-dataviewutils": "^6.0.3",
+    "powerbi-visuals-utils-formattingmodel": "^6.2.2",
+    "powerbi-visuals-utils-formattingutils": "^6.0.2",
+    "powerbi-visuals-utils-tooltiputils": "^6.0.4",
+    "powerbi-visuals-utils-typeutils": "^6.0.1"
+  },
+  "devDependencies": {
+    "@types/d3": "^7.4.3",
+    "@types/jquery": "^3.5.29",
+    "@types/lodash": "^4.17.16",
+    "powerbi-visuals-tools": "^6.1.0",
+    "typescript": "^5.7.3"
+  }
+}

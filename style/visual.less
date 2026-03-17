@@ -1,0 +1,98 @@
+:host {
+  display: block;
+}
+
+.bullet-chart-root {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Arial, sans-serif;
+  color: #1f2937;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.bullet-chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  color: #6b7280;
+  font-size: 13px;
+}
+
+.bullet-chart-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 16px;
+  padding: 8px 12px 4px;
+  font-size: 13px;
+}
+
+.bullet-chart-legend-title {
+  font-weight: 700;
+  color: #1f2937;
+  margin-right: 6px;
+}
+
+.bullet-chart-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: default;
+}
+
+.bullet-row {
+  cursor: pointer;
+  outline: none;
+}
+
+.bullet-row:focus .actual-bar,
+.bullet-row:focus .over-budget-bar,
+.bullet-row:focus .target-line {
+  stroke-width: 3px;
+}
+
+.bullet-chart-legend-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  border: 1px solid #9ca3af;
+}
+
+.bullet-chart-svg {
+  width: 100%;
+  height: calc(100% - 36px);
+}
+
+.axis text {
+  fill: #6b7280;
+  font-size: 11px;
+}
+
+.axis path,
+.axis line {
+  stroke: #d1d5db;
+}
+
+.grid line {
+  stroke: #e5e7eb;
+}
+
+.grid path {
+  display: none;
+}
+
+.category-label {
+  fill: #374151;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.value-label {
+  fill: #111827;
+  font-size: 11px;
+  font-weight: 600;
+}
