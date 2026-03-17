@@ -82,4 +82,3 @@ Notes:
 
 This project packages correctly with `pbiviz`.  
 For AppSource submission, ensure you also complete Microsoft validation requirements (accessibility, interactions, context menu, high contrast, etc.).
-
