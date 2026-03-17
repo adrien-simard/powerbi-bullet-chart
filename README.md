@@ -8,6 +8,10 @@ Custom Power BI visual (`.pbiviz`) for budget tracking with:
 - Tooltips for Actual, Forecast, Over-budget, and Budget target
 - Configurable legend position and label formatting
 
+## Preview
+
+![Bullet Chart Preview](./Screenshot-bullet.png)
+
 ## Project Structure
 
 - `src/visual.ts`: D3 rendering + interactions/tooltips
