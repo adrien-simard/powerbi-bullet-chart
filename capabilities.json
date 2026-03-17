@@ -86,7 +86,7 @@
   ],
   "objects": {
     "bulletChart": {
-      "displayName": "Bullet Chart",
+      "displayName": "Visual",
       "properties": {
         "warningThreshold": {
           "displayName": "Warning threshold",
@@ -100,70 +100,16 @@
             "numeric": true
           }
         },
-        "showLegend": {
-          "displayName": "Show legend",
+        "seriesOpacity": {
+          "displayName": "Series opacity",
           "type": {
-            "bool": true
+            "numeric": true
           }
         },
         "showCategoryLabels": {
           "displayName": "Show category labels",
           "type": {
             "bool": true
-          }
-        },
-        "showDataLabels": {
-          "displayName": "Show data labels",
-          "type": {
-            "bool": true
-          }
-        },
-        "labelPosition": {
-          "displayName": "Bar label position",
-          "type": {
-            "enumeration": [
-              {
-                "displayName": "Inside",
-                "value": "inside"
-              },
-              {
-                "displayName": "Bottom",
-                "value": "bottom"
-              },
-              {
-                "displayName": "Top",
-                "value": "top"
-              }
-            ]
-          }
-        },
-        "autoLabelContrast": {
-          "displayName": "Auto label contrast",
-          "type": {
-            "bool": true
-          }
-        },
-        "legendPosition": {
-          "displayName": "Legend position",
-          "type": {
-            "enumeration": [
-              {
-                "displayName": "Top",
-                "value": "top"
-              },
-              {
-                "displayName": "Bottom",
-                "value": "bottom"
-              },
-              {
-                "displayName": "Left",
-                "value": "left"
-              },
-              {
-                "displayName": "Right",
-                "value": "right"
-              }
-            ]
           }
         }
       }
@@ -233,8 +179,303 @@
         }
       }
     },
+    "dataLabels": {
+      "displayName": "Data labels",
+      "properties": {
+        "showDataLabels": {
+          "displayName": "Show data labels",
+          "type": {
+            "bool": true
+          }
+        },
+        "fontSize": {
+          "displayName": "Text size",
+          "type": {
+            "numeric": true
+          }
+        },
+        "fontFamily": {
+          "displayName": "Font",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Segoe UI",
+                "value": "Segoe UI"
+              },
+              {
+                "displayName": "Arial",
+                "value": "Arial"
+              },
+              {
+                "displayName": "Calibri",
+                "value": "Calibri"
+              },
+              {
+                "displayName": "Tahoma",
+                "value": "Tahoma"
+              },
+              {
+                "displayName": "Verdana",
+                "value": "Verdana"
+              }
+            ]
+          }
+        },
+        "labelPosition": {
+          "displayName": "Position",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Inside",
+                "value": "inside"
+              },
+              {
+                "displayName": "Bottom",
+                "value": "bottom"
+              },
+              {
+                "displayName": "Top",
+                "value": "top"
+              }
+            ]
+          }
+        },
+        "autoLabelContrast": {
+          "displayName": "Auto contrast",
+          "type": {
+            "bool": true
+          }
+        },
+        "showBackground": {
+          "displayName": "Background",
+          "type": {
+            "bool": true
+          }
+        },
+        "backgroundColor": {
+          "displayName": "Background color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "backgroundOpacity": {
+          "displayName": "Background opacity",
+          "type": {
+            "numeric": true
+          }
+        }
+      }
+    },
+    "xAxis": {
+      "displayName": "X axis",
+      "properties": {
+        "show": {
+          "displayName": "Show axis",
+          "type": {
+            "bool": true
+          }
+        },
+        "title": {
+          "displayName": "Show title",
+          "type": {
+            "bool": true
+          }
+        },
+        "titleText": {
+          "displayName": "Title text",
+          "type": {
+            "text": true
+          }
+        },
+        "color": {
+          "displayName": "Text color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "fontSize": {
+          "displayName": "Text size",
+          "type": {
+            "numeric": true
+          }
+        },
+        "autoScale": {
+          "displayName": "Auto scale",
+          "type": {
+            "bool": true
+          }
+        },
+        "min": {
+          "displayName": "Minimum",
+          "type": {
+            "numeric": true
+          }
+        },
+        "max": {
+          "displayName": "Maximum",
+          "type": {
+            "numeric": true
+          }
+        },
+        "showGridlines": {
+          "displayName": "Gridlines",
+          "type": {
+            "bool": true
+          }
+        },
+        "showTickMarks": {
+          "displayName": "Tick marks",
+          "type": {
+            "bool": true
+          }
+        }
+      }
+    },
+    "yAxis": {
+      "displayName": "Y axis",
+      "properties": {
+        "show": {
+          "displayName": "Show axis labels",
+          "type": {
+            "bool": true
+          }
+        },
+        "position": {
+          "displayName": "Position",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Left",
+                "value": "left"
+              },
+              {
+                "displayName": "Right",
+                "value": "right"
+              }
+            ]
+          }
+        },
+        "color": {
+          "displayName": "Text color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "fontSize": {
+          "displayName": "Text size",
+          "type": {
+            "numeric": true
+          }
+        }
+      }
+    },
+    "legend": {
+      "displayName": "Legend",
+      "properties": {
+        "show": {
+          "displayName": "Show legend",
+          "type": {
+            "bool": true
+          }
+        },
+        "position": {
+          "displayName": "Position",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Top",
+                "value": "top"
+              },
+              {
+                "displayName": "Bottom",
+                "value": "bottom"
+              },
+              {
+                "displayName": "Left",
+                "value": "left"
+              },
+              {
+                "displayName": "Right",
+                "value": "right"
+              }
+            ]
+          }
+        },
+        "titleText": {
+          "displayName": "Legend title",
+          "type": {
+            "text": true
+          }
+        },
+        "textColor": {
+          "displayName": "Text color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "titleColor": {
+          "displayName": "Title color",
+          "type": {
+            "fill": {
+              "solid": {
+                "color": true
+              }
+            }
+          }
+        },
+        "fontSize": {
+          "displayName": "Text size",
+          "type": {
+            "numeric": true
+          }
+        },
+        "fontFamily": {
+          "displayName": "Font",
+          "type": {
+            "enumeration": [
+              {
+                "displayName": "Segoe UI",
+                "value": "Segoe UI"
+              },
+              {
+                "displayName": "Arial",
+                "value": "Arial"
+              },
+              {
+                "displayName": "Calibri",
+                "value": "Calibri"
+              },
+              {
+                "displayName": "Tahoma",
+                "value": "Tahoma"
+              },
+              {
+                "displayName": "Verdana",
+                "value": "Verdana"
+              }
+            ]
+          }
+        }
+      }
+    },
     "numberFormat": {
-      "displayName": "Number format",
+      "displayName": "Values",
       "properties": {
         "valueDecimals": {
           "displayName": "Value decimals",
@@ -254,12 +495,6 @@
             "bool": true
           }
         },
-        "fontSize": {
-          "displayName": "Font size",
-          "type": {
-            "numeric": true
-          }
-        },
         "boldNumbers": {
           "displayName": "Bold numbers",
           "type": {
@@ -268,6 +503,40 @@
         },
         "useFieldDataFormat": {
           "displayName": "Use field data format",
+          "type": {
+            "bool": true
+          }
+        }
+      }
+    },
+    "tooltips": {
+      "displayName": "Tooltips",
+      "properties": {
+        "show": {
+          "displayName": "Show tooltips",
+          "type": {
+            "bool": true
+          }
+        }
+      }
+    },
+    "layout": {
+      "displayName": "Layout",
+      "properties": {
+        "leftPadding": {
+          "displayName": "Left padding",
+          "type": {
+            "numeric": true
+          }
+        },
+        "rightPadding": {
+          "displayName": "Right padding",
+          "type": {
+            "numeric": true
+          }
+        },
+        "responsive": {
+          "displayName": "Responsive behavior",
           "type": {
             "bool": true
           }

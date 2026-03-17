@@ -22,6 +22,7 @@ interface BulletSettings {
     showLegend: boolean;
     showCategoryLabels: boolean;
     showDataLabels: boolean;
+    seriesOpacity: number;
     safeColor: string;
     warningColor: string;
     overBudgetColor: string;
@@ -31,12 +32,39 @@ interface BulletSettings {
     valueDecimals: number;
     percentDecimals: number;
     showKCHF: boolean;
-    fontSize: number;
     boldNumbers: boolean;
     useFieldDataFormat: boolean;
     labelPosition: "inside" | "bottom" | "top";
     autoLabelContrast: boolean;
     legendPosition: "top" | "bottom" | "left" | "right";
+    legendTitleText: string;
+    legendTextColor: string;
+    legendTitleColor: string;
+    legendFontSize: number;
+    legendFontFamily: string;
+    dataLabelFontSize: number;
+    dataLabelFontFamily: string;
+    dataLabelShowBackground: boolean;
+    dataLabelBackgroundColor: string;
+    dataLabelBackgroundOpacity: number;
+    xAxisShow: boolean;
+    xAxisTitle: boolean;
+    xAxisTitleText: string;
+    xAxisColor: string;
+    xAxisFontSize: number;
+    xAxisAutoScale: boolean;
+    xAxisMin: number;
+    xAxisMax: number;
+    xAxisShowGridlines: boolean;
+    xAxisShowTickMarks: boolean;
+    yAxisShow: boolean;
+    yAxisPosition: "left" | "right";
+    yAxisColor: string;
+    yAxisFontSize: number;
+    showTooltips: boolean;
+    leftPadding: number;
+    rightPadding: number;
+    responsiveLayout: boolean;
 }
 
 interface BulletRow {
@@ -45,6 +73,7 @@ interface BulletRow {
     actual: number;
     target: number;
     ratio: number;
+    zeroBudgetWithActual: boolean;
     forecast: number | null;
     forecastRatio: number;
     segments: ActualSegment[];
@@ -74,6 +103,7 @@ const DEFAULT_SETTINGS: BulletSettings = {
     showLegend: true,
     showCategoryLabels: true,
     showDataLabels: true,
+    seriesOpacity: 1,
     safeColor: "#e5e7eb",
     warningColor: "#f4c7a1",
     overBudgetColor: "#d92d20",
@@ -83,12 +113,39 @@ const DEFAULT_SETTINGS: BulletSettings = {
     valueDecimals: 0,
     percentDecimals: 0,
     showKCHF: true,
-    fontSize: 12,
     boldNumbers: false,
     useFieldDataFormat: true,
     labelPosition: "inside",
     autoLabelContrast: true,
-    legendPosition: "top"
+    legendPosition: "top",
+    legendTitleText: "Type",
+    legendTextColor: "#374151",
+    legendTitleColor: "#111827",
+    legendFontSize: 11,
+    legendFontFamily: "Segoe UI",
+    dataLabelFontSize: 12,
+    dataLabelFontFamily: "Segoe UI",
+    dataLabelShowBackground: false,
+    dataLabelBackgroundColor: "#ffffff",
+    dataLabelBackgroundOpacity: 0.8,
+    xAxisShow: true,
+    xAxisTitle: false,
+    xAxisTitleText: "Budget usage (%)",
+    xAxisColor: "#374151",
+    xAxisFontSize: 11,
+    xAxisAutoScale: true,
+    xAxisMin: 0,
+    xAxisMax: 1.2,
+    xAxisShowGridlines: true,
+    xAxisShowTickMarks: true,
+    yAxisShow: true,
+    yAxisPosition: "left",
+    yAxisColor: "#374151",
+    yAxisFontSize: 12,
+    showTooltips: true,
+    leftPadding: 6,
+    rightPadding: 8,
+    responsiveLayout: true
 };
 const MAX_DOMAIN_CAP = 20;
 const MIN_INSIDE_PERCENT_PX = 52;
@@ -191,9 +248,10 @@ export class Visual implements IVisual {
         return {
             warningThreshold: Math.max(0, Math.min(1, Number(pane.bulletChart.warningThreshold.value ?? DEFAULT_SETTINGS.warningThreshold))),
             barHeightRatio: Math.max(0.2, Math.min(0.9, Number(pane.bulletChart.barHeight.value ?? DEFAULT_SETTINGS.barHeightRatio))),
-            showLegend: Boolean(pane.bulletChart.showLegend.value ?? getObjectValue(objects, "bulletChart", "showLegend", DEFAULT_SETTINGS.showLegend)),
+            showLegend: Boolean(pane.legend.show.value ?? getObjectValue(objects, "legend", "show", DEFAULT_SETTINGS.showLegend)),
             showCategoryLabels: Boolean(pane.bulletChart.showCategoryLabels.value ?? getObjectValue(objects, "bulletChart", "showCategoryLabels", DEFAULT_SETTINGS.showCategoryLabels)),
-            showDataLabels: Boolean(pane.bulletChart.showDataLabels.value ?? getObjectValue(objects, "bulletChart", "showDataLabels", DEFAULT_SETTINGS.showDataLabels)),
+            showDataLabels: Boolean(pane.dataLabels.showDataLabels.value ?? getObjectValue(objects, "dataLabels", "showDataLabels", DEFAULT_SETTINGS.showDataLabels)),
+            seriesOpacity: Math.max(0.1, Math.min(1, Number(pane.bulletChart.seriesOpacity.value ?? DEFAULT_SETTINGS.seriesOpacity))),
             safeColor: pane.colors.safeColor.value?.value ?? getFillColor(objects, "colors", "safeColor", DEFAULT_SETTINGS.safeColor),
             warningColor: pane.colors.warningColor.value?.value ?? getFillColor(objects, "colors", "warningColor", DEFAULT_SETTINGS.warningColor),
             overBudgetColor: pane.colors.overBudgetColor.value?.value ?? getFillColor(objects, "colors", "overBudgetColor", DEFAULT_SETTINGS.overBudgetColor),
@@ -203,12 +261,39 @@ export class Visual implements IVisual {
             valueDecimals: Math.max(0, Math.min(6, Number(pane.numberFormat.valueDecimals.value ?? DEFAULT_SETTINGS.valueDecimals))),
             percentDecimals: Math.max(0, Math.min(4, Number(pane.numberFormat.percentDecimals.value ?? DEFAULT_SETTINGS.percentDecimals))),
             showKCHF: Boolean(pane.numberFormat.showKCHF.value ?? DEFAULT_SETTINGS.showKCHF),
-            fontSize: Math.max(8, Math.min(24, Number(pane.numberFormat.fontSize.value ?? DEFAULT_SETTINGS.fontSize))),
             boldNumbers: Boolean(pane.numberFormat.boldNumbers.value ?? DEFAULT_SETTINGS.boldNumbers),
             useFieldDataFormat: Boolean(pane.numberFormat.useFieldDataFormat.value ?? DEFAULT_SETTINGS.useFieldDataFormat),
-            labelPosition: this.normalizeLabelPosition(String(pane.bulletChart.labelPosition.value?.value ?? DEFAULT_SETTINGS.labelPosition)),
-            autoLabelContrast: Boolean(pane.bulletChart.autoLabelContrast.value ?? DEFAULT_SETTINGS.autoLabelContrast),
-            legendPosition: this.normalizeLegendPosition(String(pane.bulletChart.legendPosition.value?.value ?? DEFAULT_SETTINGS.legendPosition))
+            labelPosition: this.normalizeLabelPosition(String(pane.dataLabels.labelPosition.value?.value ?? DEFAULT_SETTINGS.labelPosition)),
+            autoLabelContrast: Boolean(pane.dataLabels.autoLabelContrast.value ?? DEFAULT_SETTINGS.autoLabelContrast),
+            legendPosition: this.normalizeLegendPosition(String(pane.legend.position.value?.value ?? DEFAULT_SETTINGS.legendPosition)),
+            legendTitleText: String(pane.legend.titleText.value ?? DEFAULT_SETTINGS.legendTitleText),
+            legendTextColor: pane.legend.textColor.value?.value ?? DEFAULT_SETTINGS.legendTextColor,
+            legendTitleColor: pane.legend.titleColor.value?.value ?? DEFAULT_SETTINGS.legendTitleColor,
+            legendFontSize: Math.max(8, Math.min(24, Number(pane.legend.fontSize.value ?? DEFAULT_SETTINGS.legendFontSize))),
+            legendFontFamily: String(pane.legend.fontFamily.value?.value ?? DEFAULT_SETTINGS.legendFontFamily),
+            dataLabelFontSize: Math.max(8, Math.min(24, Number(pane.dataLabels.fontSize.value ?? DEFAULT_SETTINGS.dataLabelFontSize))),
+            dataLabelFontFamily: String(pane.dataLabels.fontFamily.value?.value ?? DEFAULT_SETTINGS.dataLabelFontFamily),
+            dataLabelShowBackground: Boolean(pane.dataLabels.showBackground.value ?? DEFAULT_SETTINGS.dataLabelShowBackground),
+            dataLabelBackgroundColor: pane.dataLabels.backgroundColor.value?.value ?? DEFAULT_SETTINGS.dataLabelBackgroundColor,
+            dataLabelBackgroundOpacity: Math.max(0, Math.min(1, Number(pane.dataLabels.backgroundOpacity.value ?? DEFAULT_SETTINGS.dataLabelBackgroundOpacity))),
+            xAxisShow: Boolean(pane.xAxis.show.value ?? DEFAULT_SETTINGS.xAxisShow),
+            xAxisTitle: Boolean(pane.xAxis.title.value ?? DEFAULT_SETTINGS.xAxisTitle),
+            xAxisTitleText: String(pane.xAxis.titleText.value ?? DEFAULT_SETTINGS.xAxisTitleText),
+            xAxisColor: pane.xAxis.color.value?.value ?? DEFAULT_SETTINGS.xAxisColor,
+            xAxisFontSize: Math.max(8, Math.min(24, Number(pane.xAxis.fontSize.value ?? DEFAULT_SETTINGS.xAxisFontSize))),
+            xAxisAutoScale: Boolean(pane.xAxis.autoScale.value ?? DEFAULT_SETTINGS.xAxisAutoScale),
+            xAxisMin: Number(pane.xAxis.min.value ?? DEFAULT_SETTINGS.xAxisMin),
+            xAxisMax: Number(pane.xAxis.max.value ?? DEFAULT_SETTINGS.xAxisMax),
+            xAxisShowGridlines: Boolean(pane.xAxis.showGridlines.value ?? DEFAULT_SETTINGS.xAxisShowGridlines),
+            xAxisShowTickMarks: Boolean(pane.xAxis.showTickMarks.value ?? DEFAULT_SETTINGS.xAxisShowTickMarks),
+            yAxisShow: Boolean(pane.yAxis.show.value ?? DEFAULT_SETTINGS.yAxisShow),
+            yAxisPosition: this.normalizeAxisPosition(String(pane.yAxis.position.value?.value ?? DEFAULT_SETTINGS.yAxisPosition)),
+            yAxisColor: pane.yAxis.color.value?.value ?? DEFAULT_SETTINGS.yAxisColor,
+            yAxisFontSize: Math.max(8, Math.min(24, Number(pane.yAxis.fontSize.value ?? DEFAULT_SETTINGS.yAxisFontSize))),
+            showTooltips: Boolean(pane.tooltips.show.value ?? DEFAULT_SETTINGS.showTooltips),
+            leftPadding: Math.max(0, Math.min(80, Number(pane.layout.leftPadding.value ?? DEFAULT_SETTINGS.leftPadding))),
+            rightPadding: Math.max(0, Math.min(120, Number(pane.layout.rightPadding.value ?? DEFAULT_SETTINGS.rightPadding))),
+            responsiveLayout: Boolean(pane.layout.responsive.value ?? DEFAULT_SETTINGS.responsiveLayout)
         };
     }
 
@@ -246,7 +331,7 @@ export class Visual implements IVisual {
                 const target = targetColumn ? this.toNumber(targetColumn.values[categoryIndex]) : null;
                 const forecast = forecastColumn ? this.toNumber(forecastColumn.values[categoryIndex]) : null;
 
-                if (actual === null || (target !== null && target <= 0)) {
+                if (actual === null) {
                     return;
                 }
 
@@ -264,6 +349,7 @@ export class Visual implements IVisual {
                         actual: safeActual,
                         target: safeTarget,
                         ratio: 0,
+                        zeroBudgetWithActual: false,
                         forecast: safeForecast,
                         forecastRatio: 0,
                         actualFormat: actualColumn.source.format,
@@ -297,7 +383,7 @@ export class Visual implements IVisual {
             });
         });
 
-        const rows = Array.from(rowByCategory.values());
+        let rows = Array.from(rowByCategory.values());
 
         if (!hasExplicitTarget) {
             const inferredTarget = Math.max(d3.max(rows, (row) => row.actual) ?? 1, 1e-9);
@@ -305,11 +391,23 @@ export class Visual implements IVisual {
                 row.target = inferredTarget;
                 row.ratio = inferredTarget > 0 ? row.actual / inferredTarget : 0;
                 row.forecastRatio = row.forecast !== null && inferredTarget > 0 ? row.forecast / inferredTarget : 0;
+                row.zeroBudgetWithActual = false;
             });
         } else {
+            rows = rows.filter((row) => !(row.target <= 0 && row.actual <= 1e-9));
+
             rows.forEach((row) => {
-                row.ratio = row.target > 0 ? row.actual / row.target : 0;
-                row.forecastRatio = row.forecast !== null && row.target > 0 ? row.forecast / row.target : 0;
+                if (row.target > 0) {
+                    row.ratio = row.actual / row.target;
+                    row.forecastRatio = row.forecast !== null ? row.forecast / row.target : 0;
+                    row.zeroBudgetWithActual = false;
+                    return;
+                }
+
+                // Business rule: budget = 0 and actual > 0 => keep row and render as 100% over-budget.
+                row.ratio = 1;
+                row.forecastRatio = row.forecast !== null && row.actual > 0 ? Math.max(1, row.forecast / row.actual) : 1;
+                row.zeroBudgetWithActual = row.actual > 0;
             });
         }
 
@@ -343,7 +441,7 @@ export class Visual implements IVisual {
                 fill: "repeating-linear-gradient(45deg, #d1d5db 0px, #d1d5db 6px, #9ca3af 6px, #9ca3af 8px)"
             });
         }
-        const legendFontSize = `${Math.max(9, Math.round(this.getCurrentFontSize() - 1))}px`;
+        const legendFontSize = `${Math.max(8, Math.round(settings.legendFontSize))}px`;
 
         if (!showLegend || legendItems.length === 0) {
             this.legend.style("display", "none");
@@ -358,6 +456,8 @@ export class Visual implements IVisual {
         this.root.style("display", "flex");
         this.legend.style("display", "flex");
         this.legend.style("font-size", legendFontSize);
+        this.legend.style("font-family", settings.legendFontFamily);
+        this.legend.style("color", settings.legendTextColor);
         this.legend.style("align-items", "center");
         this.legend.style("flex-wrap", "wrap");
         this.legend.style("column-gap", "10px");
@@ -370,8 +470,9 @@ export class Visual implements IVisual {
             .style("display", "inline-block")
             .style("margin-right", "10px")
             .style("font-weight", "600")
+            .style("color", settings.legendTitleColor)
             .style("white-space", "nowrap")
-            .text("Type");
+            .text(settings.legendTitleText || "Type");
 
         if (legendPosition === "left" || legendPosition === "right") {
             this.root
@@ -439,6 +540,7 @@ export class Visual implements IVisual {
         items
             .append("span")
             .style("display", "inline-block")
+            .style("color", settings.legendTextColor)
             .style("white-space", "nowrap")
             .text((d) => d.name);
     }
@@ -453,27 +555,30 @@ export class Visual implements IVisual {
         const rowHeight = 30;
         const chartHeight = Math.max(outerHeight, rows.length * rowHeight + 56);
         const maxLabelLength = d3.max(rows, (row) => row.category.length) ?? 12;
-        const computedLeft = Math.min(260, Math.max(110, maxLabelLength * 6 + 28));
+        const computedLeft = Math.min(240, Math.max(100, maxLabelLength * 6 + 22)) + settings.leftPadding;
+        const computedRight = settings.rightPadding + (hasExplicitTarget ? 24 : 12);
         const margin = {
             top: 12,
-            right: hasExplicitTarget ? 140 : 24,
+            right: computedRight,
             bottom: 32,
-            left: settings.showCategoryLabels ? computedLeft : 24
+            left: settings.showCategoryLabels && settings.yAxisPosition === "left" ? computedLeft : 24
         };
 
-        const innerWidth = Math.max(outerWidth - margin.left - margin.right, 80);
+        const rightLabelArea = settings.showCategoryLabels && settings.yAxisPosition === "right" ? computedLeft - 24 : 0;
+        const innerWidth = Math.max(outerWidth - margin.left - margin.right - rightLabelArea, 80);
         const innerHeight = Math.max(chartHeight - margin.top - margin.bottom, 60);
-        const maxRatio = Math.max(
-            1.2,
-            Math.min(
-                MAX_DOMAIN_CAP,
-                d3.max(rows, (row) => Math.max(this.sanitizeRatio(row.ratio), this.sanitizeRatio(row.forecastRatio), 1)) ?? 1.2
-            )
-        );
+        const dataMaxRatio = d3.max(rows, (row) => Math.max(this.sanitizeRatio(row.ratio), this.sanitizeRatio(row.forecastRatio), 0)) ?? 0;
+        const hasPlottedValues = dataMaxRatio > 0;
+        const autoAxisMax = this.getAutoAxisMax(dataMaxRatio);
+        const axisMin = settings.xAxisAutoScale ? 0 : Math.max(0, settings.xAxisMin);
+        const axisMaxCandidate = settings.xAxisAutoScale
+            ? Math.max(1, autoAxisMax)
+            : Math.max(1, axisMin + 0.01, settings.xAxisMax);
+        const maxRatio = Math.max(axisMin + 0.01, Math.min(MAX_DOMAIN_CAP, axisMaxCandidate));
         const domainMax = this.transformRatio(maxRatio);
 
         const x = d3.scaleLinear()
-            .domain([0, domainMax])
+            .domain([this.transformRatio(axisMin), domainMax])
             .range([0, innerWidth]);
         const xRatio = (ratio: number): number => x(this.transformRatio(Math.min(this.sanitizeRatio(ratio), maxRatio)));
 
@@ -484,7 +589,7 @@ export class Visual implements IVisual {
 
         this.svg
             .attr("viewBox", `0 0 ${outerWidth} ${chartHeight}`)
-            .attr("preserveAspectRatio", "xMinYMin meet");
+            .attr("preserveAspectRatio", settings.responsiveLayout ? "xMinYMin meet" : "none");
 
         const root = this.svg.append("g")
             .attr("transform", `translate(${margin.left},${margin.top})`);
@@ -507,35 +612,54 @@ export class Visual implements IVisual {
             .attr("stroke", "#9ca3af")
             .attr("stroke-width", 2);
 
-        const ticks = this.getAxisTicks(maxRatio).map((ratio) => ({
+        const ticks = this.getAxisTicks(axisMin, maxRatio).map((ratio) => ({
             raw: ratio,
             transformed: this.transformRatio(ratio)
         }));
+        const showXAxis = settings.xAxisShow && hasPlottedValues;
 
-        root.append("g")
-            .attr("class", "grid")
-            .selectAll("line")
-            .data(ticks)
-            .enter()
-            .append("line")
-            .attr("x1", (d) => x(d.transformed))
-            .attr("x2", (d) => x(d.transformed))
-            .attr("y1", 0)
-            .attr("y2", innerHeight)
-            .attr("stroke", "#cfd4db");
+        if (showXAxis && settings.xAxisShowGridlines) {
+            root.append("g")
+                .attr("class", "grid")
+                .selectAll("line")
+                .data(ticks)
+                .enter()
+                .append("line")
+                .attr("x1", (d) => x(d.transformed))
+                .attr("x2", (d) => x(d.transformed))
+                .attr("y1", 0)
+                .attr("y2", innerHeight)
+                .attr("stroke", "#cfd4db");
+        }
 
-        root.append("g")
-            .attr("class", "axis")
-            .attr("transform", `translate(0,${innerHeight})`)
-            .call(
-                d3.axisBottom(x)
-                    .tickValues(ticks.map((d) => d.transformed))
-                    .tickFormat((value) => {
-                        const numeric = Number(value);
-                        const rawTick = this.inverseTransformRatio(numeric);
-                        return d3.format(".0%")(rawTick);
-                    })
-            );
+        if (showXAxis) {
+            const axis = root.append("g")
+                .attr("class", "axis")
+                .attr("transform", `translate(0,${innerHeight})`)
+                .call(
+                    d3.axisBottom(x)
+                        .tickSize(settings.xAxisShowTickMarks ? 6 : 0)
+                        .tickValues(ticks.map((d) => d.transformed))
+                        .tickFormat((value) => {
+                            const numeric = Number(value);
+                            const rawTick = this.inverseTransformRatio(numeric);
+                            return this.formatPercent(rawTick, settings);
+                        })
+                );
+
+            axis.selectAll("text").attr("fill", settings.xAxisColor);
+            axis.selectAll("path,line").attr("stroke", settings.xAxisColor);
+
+            if (settings.xAxisTitle) {
+                root.append("text")
+                    .attr("class", "x-axis-title")
+                    .attr("x", innerWidth / 2)
+                    .attr("y", innerHeight + Math.max(26, settings.xAxisFontSize + 12))
+                    .attr("text-anchor", "middle")
+                    .attr("fill", settings.xAxisColor)
+                    .text(settings.xAxisTitleText);
+            }
+        }
 
         const groups = root
             .selectAll<SVGGElement, BulletRow>(".bullet-row")
@@ -551,7 +675,8 @@ export class Visual implements IVisual {
             .attr("y", 0)
             .attr("width", xRatio(Math.min(settings.warningThreshold, maxRatio)))
             .attr("height", y.bandwidth())
-            .attr("fill", settings.safeColor);
+            .attr("fill", settings.safeColor)
+            .attr("opacity", settings.seriesOpacity);
 
         groups
             .append("rect")
@@ -559,7 +684,8 @@ export class Visual implements IVisual {
             .attr("y", 0)
             .attr("width", Math.max(0, xRatio(Math.min(1, maxRatio)) - xRatio(settings.warningThreshold)))
             .attr("height", y.bandwidth())
-            .attr("fill", settings.warningColor);
+            .attr("fill", settings.warningColor)
+            .attr("opacity", settings.seriesOpacity);
 
         const segmentGroups = groups
             .append("g")
@@ -588,6 +714,7 @@ export class Visual implements IVisual {
                     .attr("height", barHeight)
                     .attr("width", segmentWidth)
                     .attr("fill", segment.color)
+                    .attr("opacity", settings.seriesOpacity)
                     .datum({
                         row,
                         segment
@@ -600,11 +727,19 @@ export class Visual implements IVisual {
         groups
             .append("rect")
             .attr("class", "over-budget-bar")
-            .attr("x", xRatio(Math.min(1, maxRatio)))
+            .attr("x", (d) => d.zeroBudgetWithActual ? xRatio(0) : xRatio(Math.min(1, maxRatio)))
             .attr("y", y.bandwidth() * ((1 - settings.barHeightRatio) / 2))
             .attr("height", y.bandwidth() * settings.barHeightRatio)
-            .attr("width", (d) => d.actual > d.target ? Math.max(0, xRatio(Math.min(this.sanitizeRatio(d.ratio), maxRatio)) - xRatio(Math.min(1, maxRatio))) : 0)
-            .attr("fill", settings.overBudgetColor);
+            .attr("width", (d) => {
+                if (d.zeroBudgetWithActual) {
+                    return Math.max(0, xRatio(Math.min(1, maxRatio)) - xRatio(0));
+                }
+                return d.actual > d.target
+                    ? Math.max(0, xRatio(Math.min(this.sanitizeRatio(d.ratio), maxRatio)) - xRatio(Math.min(1, maxRatio)))
+                    : 0;
+            })
+            .attr("fill", settings.overBudgetColor)
+            .attr("opacity", settings.seriesOpacity);
 
         // Forecast top-up: hatched gray segment from Actual to Forecast.
         groups
@@ -623,10 +758,81 @@ export class Visual implements IVisual {
                 return to > from ? Math.max(0, xRatio(to) - xRatio(from)) : 0;
             })
             .attr("fill", "url(#forecastHatch)")
+            .attr("opacity", settings.seriesOpacity)
             .attr("stroke", "#9ca3af")
             .attr("stroke-width", 0.5);
 
-        const targetLines = groups
+        if (settings.showDataLabels) {
+            groups
+                .append("text")
+                .attr("class", "value-label over-budget-value-label")
+                .attr("font-size", `${Math.max(8, Math.round(settings.dataLabelFontSize - 1))}px`)
+                .attr("font-family", settings.dataLabelFontFamily)
+                .attr("text-anchor", (d) => {
+                    const overStart = d.zeroBudgetWithActual ? 0 : Math.min(1, maxRatio);
+                    const overEnd = d.zeroBudgetWithActual ? Math.min(1, maxRatio) : Math.min(this.sanitizeRatio(d.ratio), maxRatio);
+                    const overWidth = xRatio(overEnd) - xRatio(overStart);
+                    return overWidth >= 26 ? "middle" : "start";
+                })
+                .attr("dominant-baseline", "middle")
+                .attr("fill", (d) => {
+                    const overStart = d.zeroBudgetWithActual ? 0 : Math.min(1, maxRatio);
+                    const overEnd = d.zeroBudgetWithActual ? Math.min(1, maxRatio) : Math.min(this.sanitizeRatio(d.ratio), maxRatio);
+                    const overWidth = xRatio(overEnd) - xRatio(overStart);
+                    return overWidth >= 26 ? "#ffffff" : "#7f1d1d";
+                })
+                .attr("x", (d) => {
+                    const overStart = d.zeroBudgetWithActual ? 0 : Math.min(1, maxRatio);
+                    const overEnd = d.zeroBudgetWithActual ? Math.min(1, maxRatio) : Math.min(this.sanitizeRatio(d.ratio), maxRatio);
+                    const overWidth = xRatio(overEnd) - xRatio(overStart);
+                    return overWidth >= 26
+                        ? xRatio(overStart) + (overWidth / 2)
+                        : Math.min(innerWidth - 2, xRatio(overEnd) + 4);
+                })
+                .attr("y", y.bandwidth() * 0.5)
+                .text((d) => {
+                    const overValue = d.zeroBudgetWithActual ? d.actual : Math.max(0, d.actual - d.target);
+                    return overValue > 0 ? this.formatValue(overValue, settings, d.actualFormat) : "";
+                });
+
+            groups
+                .append("text")
+                .attr("class", "value-label forecast-value-label")
+                .attr("font-size", `${Math.max(8, Math.round(settings.dataLabelFontSize - 1))}px`)
+                .attr("font-family", settings.dataLabelFontFamily)
+                .attr("text-anchor", (d) => {
+                    if (d.forecast === null) {
+                        return "middle";
+                    }
+                    const from = Math.min(this.sanitizeRatio(d.ratio), maxRatio);
+                    const to = Math.min(this.sanitizeRatio(d.forecastRatio), maxRatio);
+                    const width = xRatio(to) - xRatio(from);
+                    return width >= 26 ? "middle" : "start";
+                })
+                .attr("dominant-baseline", "middle")
+                .attr("fill", "#243244")
+                .attr("x", (d) => {
+                    if (d.forecast === null) {
+                        return xRatio(0);
+                    }
+                    const from = Math.min(this.sanitizeRatio(d.ratio), maxRatio);
+                    const to = Math.min(this.sanitizeRatio(d.forecastRatio), maxRatio);
+                    const width = xRatio(to) - xRatio(from);
+                    return width >= 26
+                        ? xRatio(from) + (width / 2)
+                        : Math.min(innerWidth - 2, xRatio(to) + 4);
+                })
+                .attr("y", y.bandwidth() * 0.5)
+                .text((d) => {
+                    if (d.forecast === null || d.forecast <= d.actual) {
+                        return "";
+                    }
+                    const topUp = Math.max(0, d.forecast - d.actual);
+                    return topUp > 0 ? this.formatValue(topUp, settings, d.actualFormat) : "";
+                });
+        }
+
+        groups
             .append("line")
             .attr("class", "target-line")
             .attr("x1", xRatio(Math.min(1, maxRatio)))
@@ -645,18 +851,21 @@ export class Visual implements IVisual {
             .attr("height", y.bandwidth())
             .attr("fill", "transparent");
 
-        if (settings.showCategoryLabels) {
+        if (settings.showCategoryLabels && settings.yAxisShow) {
+            const labelsOnRight = settings.yAxisPosition === "right";
+            const labelX = labelsOnRight ? margin.left + innerWidth + 10 : margin.left - 10;
+            const labelAnchor = labelsOnRight ? "start" : "end";
             const categoryLabels = this.svg.append("g")
                 .selectAll<SVGTextElement, BulletRow>(".category-label")
                 .data(rows)
                 .enter()
                 .append("text")
                 .attr("class", "category-label")
-                .attr("x", margin.left - 10)
+                .attr("x", labelX)
                 .attr("y", (d) => margin.top + (y(d.key) ?? 0) + y.bandwidth() / 2)
-                .attr("text-anchor", "end")
+                .attr("text-anchor", labelAnchor)
                 .attr("dominant-baseline", "middle")
-                .attr("fill", settings.labelColor)
+                .attr("fill", settings.yAxisColor)
                 .text((d) => d.category);
 
             const budgetLabels = this.svg.append("g")
@@ -665,22 +874,25 @@ export class Visual implements IVisual {
                 .enter()
                 .append("text")
                 .attr("class", "value-label budget-label")
-                .attr("x", margin.left - 10)
-                .attr("y", (d) => margin.top + (y(d.key) ?? 0) + y.bandwidth() / 2 + Math.max(10, Math.round(settings.fontSize * 0.95)))
-                .attr("text-anchor", "end")
+                .attr("x", labelX)
+                .attr("y", (d) => margin.top + (y(d.key) ?? 0) + y.bandwidth() / 2 + Math.max(10, Math.round(settings.yAxisFontSize * 0.95)))
+                .attr("text-anchor", labelAnchor)
                 .attr("dominant-baseline", "middle")
-                .attr("fill", "#6b7280")
+                .attr("fill", settings.yAxisColor)
                 .text((d) => hasExplicitTarget ? `Budget: ${this.formatValue(d.target, settings, d.targetFormat)}` : "");
 
-            this.bindTooltip<BulletRow>(budgetLabels as any, (d) => this.getTargetTooltipItems(d, hasExplicitTarget, settings));
+            if (settings.showTooltips) {
+                this.bindTooltip<BulletRow>(budgetLabels as any, (d) => this.getTargetTooltipItems(d, hasExplicitTarget, settings));
+            }
         }
 
         if (settings.showDataLabels) {
             // Percentage + actual amount inside the bar, only when bar is wide enough.
-            groups
+            const dataLabels = groups
                 .append("text")
                 .attr("class", "value-label")
-                .attr("font-size", `${Math.max(9, Math.round(settings.fontSize - 1))}px`)
+                .attr("font-size", `${Math.max(8, Math.round(settings.dataLabelFontSize))}px`)
+                .attr("font-family", settings.dataLabelFontFamily)
                 .attr("text-anchor", "middle")
                 .attr("x", (d) => {
                     const ratioPx = xRatio(Math.min(this.sanitizeRatio(d.ratio), 1, maxRatio));
@@ -688,11 +900,14 @@ export class Visual implements IVisual {
                 })
                 .attr("y", () => this.getBarLabelY(y.bandwidth(), settings))
                 .attr("dominant-baseline", () => this.getBarLabelBaseline(settings))
-                .attr("fill", (d) => this.resolveBarLabelColor(d, settings, domainMax))
+                .attr("fill", (d) => this.resolveBarLabelColor(d, settings, maxRatio))
                 .text((d) => {
                     const ratioPx = xRatio(Math.min(this.sanitizeRatio(d.ratio), 1, maxRatio));
                     const minimumWidth = settings.labelPosition === "inside" ? MIN_INSIDE_PERCENT_PX : 10;
                     if (ratioPx < minimumWidth) {
+                        return "";
+                    }
+                    if (d.zeroBudgetWithActual) {
                         return "";
                     }
 
@@ -702,15 +917,46 @@ export class Visual implements IVisual {
 
                     return `${this.formatPercent(this.sanitizeRatio(d.ratio), settings)} ${this.formatValue(d.actual, settings, d.actualFormat)}`;
                 });
+
+            if (settings.dataLabelShowBackground) {
+                dataLabels.each((_, index, nodes) => {
+                    const textNode = nodes[index];
+                    if (!textNode || !textNode.textContent) {
+                        return;
+                    }
+
+                    const bbox = textNode.getBBox();
+                    if (!bbox.width || !bbox.height) {
+                        return;
+                    }
+
+                    const fillColor = d3.color(settings.dataLabelBackgroundColor);
+                    const fill = fillColor
+                        ? `rgba(${d3.rgb(fillColor).r},${d3.rgb(fillColor).g},${d3.rgb(fillColor).b},${settings.dataLabelBackgroundOpacity})`
+                        : settings.dataLabelBackgroundColor;
+
+                    d3.select(textNode.parentNode as SVGGElement)
+                        .insert("rect", "text.value-label")
+                        .attr("x", bbox.x - 4)
+                        .attr("y", bbox.y - 2)
+                        .attr("rx", 3)
+                        .attr("ry", 3)
+                        .attr("width", bbox.width + 8)
+                        .attr("height", bbox.height + 4)
+                        .attr("fill", fill);
+                });
+            }
         }
 
-        const actualBars = root.selectAll<SVGRectElement, SegmentDatum>(".actual-bar");
-        this.bindTooltip<SegmentDatum>(actualBars, (d) => this.getActualTooltipItems(d, hasExplicitTarget, settings));
-        const overBudgetBars = root.selectAll<SVGRectElement, BulletRow>(".over-budget-bar");
-        this.bindTooltip<BulletRow>(overBudgetBars as any, (d) => this.getOverBudgetTooltipItems(d, hasExplicitTarget, settings));
-        this.bindTooltip<BulletRow>(targetHoverAreas as any, (d) => this.getTargetTooltipItems(d, hasExplicitTarget, settings));
-        const forecastBars = root.selectAll<SVGRectElement, BulletRow>(".forecast-topup-bar");
-        this.bindTooltip<BulletRow>(forecastBars as any, (d) => this.getForecastTooltipItems(d, hasExplicitTarget, settings));
+        if (settings.showTooltips) {
+            const actualBars = root.selectAll<SVGRectElement, SegmentDatum>(".actual-bar");
+            this.bindTooltip<SegmentDatum>(actualBars, (d) => this.getActualTooltipItems(d, hasExplicitTarget, settings));
+            const overBudgetBars = root.selectAll<SVGRectElement, BulletRow>(".over-budget-bar");
+            this.bindTooltip<BulletRow>(overBudgetBars as any, (d) => this.getOverBudgetTooltipItems(d, hasExplicitTarget, settings));
+            this.bindTooltip<BulletRow>(targetHoverAreas as any, (d) => this.getTargetTooltipItems(d, hasExplicitTarget, settings));
+            const forecastBars = root.selectAll<SVGRectElement, BulletRow>(".forecast-topup-bar");
+            this.bindTooltip<BulletRow>(forecastBars as any, (d) => this.getForecastTooltipItems(d, hasExplicitTarget, settings));
+        }
         this.applyFontStyles(settings);
     }
 
@@ -785,14 +1031,39 @@ export class Visual implements IVisual {
         return 1 + (Math.exp(value - 1) - 1);
     }
 
-    private getAxisTicks(maxRatio: number): number[] {
-        const linearTicks = [0, 0.2, 0.4, 0.6, 0.8, 1];
+    private getAxisTicks(minRatio: number, maxRatio: number): number[] {
+        const linearTicks = [0, 0.2, 0.4, 0.6, 0.8, 1]
+            .filter((tick) => tick >= minRatio && tick <= maxRatio);
+
         if (maxRatio <= 1) {
-            return linearTicks.filter((tick) => tick <= maxRatio);
+            return linearTicks.length > 0 ? linearTicks : [minRatio, maxRatio];
         }
 
-        const logTicks = [1.2, 1.5, 2, 3, 5, 8, 10, 15, 20].filter((tick) => tick <= maxRatio);
-        return [...linearTicks, ...logTicks];
+        const logTicks = [1.2, 1.5, 2, 3, 5, 8, 10, 15, 20]
+            .filter((tick) => tick >= minRatio && tick <= maxRatio);
+        const ticks = [...linearTicks, ...logTicks];
+        return ticks.length > 0 ? ticks : [minRatio, maxRatio];
+    }
+
+    private getAutoAxisMax(dataMaxRatio: number): number {
+        if (!Number.isFinite(dataMaxRatio) || dataMaxRatio <= 0) {
+            return 1;
+        }
+
+        if (dataMaxRatio <= 1) {
+            const padded = dataMaxRatio * 1.08;
+            return Math.max(1, Math.ceil(padded * 10) / 10);
+        }
+
+        const padded = dataMaxRatio * 1.06;
+        if (padded <= 2) {
+            return Math.max(1, Math.ceil(padded * 10) / 10);
+        }
+        if (padded <= 5) {
+            return Math.max(1, Math.ceil(padded * 2) / 2);
+        }
+
+        return Math.max(1, Math.ceil(padded));
     }
 
     private getActualTooltipItems(d: SegmentDatum, hasExplicitTarget: boolean, settings: BulletSettings): VisualTooltipDataItem[] {
@@ -847,7 +1118,11 @@ export class Visual implements IVisual {
 
         const target = row.target > 0 ? row.target : 0;
         const overValue = Math.max(0, row.actual - row.target);
-        const overPct = hasExplicitTarget && target > 0 ? overValue / target : Math.max(0, row.ratio - 1);
+        const overPct = row.zeroBudgetWithActual
+            ? 1
+            : hasExplicitTarget && target > 0
+                ? overValue / target
+                : Math.max(0, row.ratio - 1);
 
         return [
             { displayName: "Category", value: row.category },
@@ -859,19 +1134,60 @@ export class Visual implements IVisual {
     }
 
     private formatValue(value: number, settings: BulletSettings, format?: string): string {
+        const fallbackSmallValue = (): string => {
+            for (let decimals = 2; decimals <= 6; decimals++) {
+                const candidate = d3.format(`,.${decimals}f`)(value);
+                if (Number(candidate.replace(/,/g, "")) !== 0) {
+                    return settings.showKCHF ? `${candidate} kCHF` : candidate;
+                }
+            }
+            const last = d3.format(",.6f")(value);
+            return settings.showKCHF ? `${last} kCHF` : last;
+        };
+
         if (settings.useFieldDataFormat && format) {
             const formatted = valueFormatter.format(value, format);
-            return settings.showKCHF ? formatted : formatted.replace(/\s*kCHF\b/gi, "").trim();
+            const withoutUnit = formatted.replace(/\s*kCHF\b/gi, "").trim();
+            const numericPart = Number(withoutUnit.replace(/[^\d.,-]/g, "").replace(/,/g, ""));
+            if (Math.abs(value) > 0 && Number.isFinite(numericPart) && numericPart === 0) {
+                return fallbackSmallValue();
+            }
+            return settings.showKCHF ? formatted : withoutUnit;
         }
 
-        const decimals = Math.max(0, Math.min(6, Math.floor(settings.valueDecimals)));
-        const valueText = d3.format(`,.${decimals}f`)(value);
+        const configuredDecimals = Math.max(0, Math.min(6, Math.floor(settings.valueDecimals)));
+        const valueText = d3.format(`,.${configuredDecimals}f`)(value);
+
+        // Avoid displaying 0 for non-zero values when rounding is too aggressive.
+        if (Math.abs(value) > 0 && Number(valueText.replace(/,/g, "")) === 0) {
+            for (let extra = configuredDecimals + 1; extra <= 6; extra++) {
+                const candidate = d3.format(`,.${extra}f`)(value);
+                if (Number(candidate.replace(/,/g, "")) !== 0) {
+                    return settings.showKCHF ? `${candidate} kCHF` : candidate;
+                }
+            }
+            return fallbackSmallValue();
+        }
+
         return settings.showKCHF ? `${valueText} kCHF` : valueText;
     }
 
     private formatPercent(value: number, settings: BulletSettings): string {
-        const decimals = Math.max(0, Math.min(4, Math.floor(settings.percentDecimals)));
-        return d3.format(`.${decimals}%`)(value);
+        const configuredDecimals = Math.max(0, Math.min(4, Math.floor(settings.percentDecimals)));
+        let decimals = configuredDecimals;
+        let percentText = d3.format(`.${decimals}%`)(value);
+
+        if (Math.abs(value) > 0 && Number(percentText.replace("%", "")) === 0) {
+            for (let extra = configuredDecimals + 1; extra <= 6; extra++) {
+                const candidate = d3.format(`.${extra}%`)(value);
+                if (Number(candidate.replace("%", "")) !== 0) {
+                    percentText = candidate;
+                    break;
+                }
+            }
+        }
+
+        return percentText;
     }
 
     private normalizeLegendPosition(value: string): "top" | "bottom" | "left" | "right" {
@@ -892,24 +1208,33 @@ export class Visual implements IVisual {
         return "inside";
     }
 
-    private getCurrentFontSize(): number {
-        return Math.max(8, Math.min(24, Number(this.formattingSettings.numberFormat.fontSize.value ?? DEFAULT_SETTINGS.fontSize)));
+    private normalizeAxisPosition(value: string): "left" | "right" {
+        const normalized = value.toLowerCase();
+        return normalized === "right" ? "right" : "left";
     }
 
     private applyFontStyles(settings: BulletSettings): void {
-        const axisFont = `${Math.max(9, Math.round(settings.fontSize - 1))}px`;
-        const categoryFont = `${Math.round(settings.fontSize)}px`;
-        const valueFont = `${Math.max(9, Math.round(settings.fontSize))}px`;
+        const axisFont = `${Math.max(8, Math.round(settings.xAxisFontSize))}px`;
+        const categoryFont = `${Math.max(8, Math.round(settings.yAxisFontSize))}px`;
+        const valueFont = `${Math.max(8, Math.round(settings.dataLabelFontSize))}px`;
         const numberWeight = settings.boldNumbers ? "700" : "600";
 
         this.svg.selectAll<SVGTextElement, unknown>(".axis text")
             .style("font-size", axisFont)
+            .style("fill", settings.xAxisColor)
+            .style("font-weight", numberWeight);
+        this.svg.selectAll<SVGTextElement, unknown>(".x-axis-title")
+            .style("font-size", axisFont)
+            .style("fill", settings.xAxisColor)
             .style("font-weight", numberWeight);
         this.svg.selectAll<SVGTextElement, unknown>(".category-label")
-            .style("font-size", categoryFont);
+            .style("font-size", categoryFont)
+            .style("fill", settings.yAxisColor);
         this.svg.selectAll<SVGTextElement, unknown>(".value-label")
             .style("font-size", valueFont)
             .style("font-weight", numberWeight);
+        this.svg.selectAll<SVGTextElement, unknown>(".budget-label")
+            .style("font-weight", "400");
     }
 
     private getBarLabelY(bandWidth: number, settings: BulletSettings): number {
